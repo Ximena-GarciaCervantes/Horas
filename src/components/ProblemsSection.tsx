@@ -12,6 +12,10 @@ interface ProblemsSectionProps {
   readOnly?: boolean;
 }
 
+function sanitizeIntegerInput(value: string): string {
+  return value.replace(/\D/g, '');
+}
+
 export default function ProblemsSection({
   problems,
   onAddProblem,
@@ -104,12 +108,14 @@ export default function ProblemsSection({
               Minutos Perdidos
             </label>
             <input
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={newProblem.minutes_lost}
               onChange={(e) =>
                 setNewProblem({
                   ...newProblem,
-                  minutes_lost: parseInt(e.target.value) || 0,
+                  minutes_lost: parseInt(sanitizeIntegerInput(e.target.value)) || 0,
                 })
               }
               className="w-full px-3 py-2 border border-rk-light rounded focus:outline-none focus:ring-2 focus:ring-rk-green bg-white text-rk-dark text-sm"

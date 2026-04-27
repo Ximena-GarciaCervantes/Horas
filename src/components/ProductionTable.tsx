@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { HourlyProduction, Problem } from '@/types';
 import { calculateLostMinutes, formatPercentage } from '@/lib/utils';
 import { Plus, Trash2 } from 'lucide-react';
@@ -24,6 +24,14 @@ interface ProductionTableProps {
   readOnly?: boolean;
   startHour?: number;
   endHour?: number;
+}
+
+type EditableProductionField = 'plan' | 'actual' | 'yield_percent';
+
+interface ProductionDraft {
+  plan: string;
+  actual: string;
+  yield_percent: string;
 }
 
 // Helper function to format hour range (e.g., 1800-1900)
@@ -50,6 +58,30 @@ function getSequentialHours(startHour: number, endHour: number): number[] {
     }
   }
   return hours;
+}
+
+function inputValueFromNumber(value: number | undefined): string {
+  return value && value > 0 ? String(value) : '';
+}
+
+function parseInputNumber(value: string): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function sanitizeIntegerInput(value: string): string {
+  return value.replace(/\D/g, '');
+}
+
+function sanitizeDecimalInput(value: string): string {
+  const cleaned = value.replace(/[^\d.]/g, '');
+  const [whole, ...decimalParts] = cleaned.split('.');
+
+  if (decimalParts.length === 0) {
+    return whole;
+  }
+
+  return `${whole}.${decimalParts.join('')}`;
 }
 
 interface ProblemCellProps {
@@ -147,10 +179,11 @@ function ProblemCell({
             <label className="problem-minutes-field">
               Min.
               <input
-                type="number"
-                min="0"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={minutesLost}
-                onChange={(e) => setMinutesLost(e.target.value)}
+                onChange={(e) => setMinutesLost(sanitizeIntegerInput(e.target.value))}
                 placeholder={String(suggestedMinutes || fallbackMinutes || 0)}
               />
             </label>
@@ -196,54 +229,129 @@ export default function ProductionTable({
   startHour = 18,
   endHour = 6,
 }: ProductionTableProps) {
-  const handleInputChange = (
-    hour: number,
-    field: 'plan' | 'actual' | 'yield_percent',
-    value: string
-  ) => {
-    const numValue = parseFloat(value) || 0;
-    const hourData = hourlyData.find((h) => h.hour === hour) || {
-      hour,
-      plan: 0,
-      actual: 0,
-      accumulated_plan: 0,
-      accumulated_actual: 0,
-      efficiency_hour: 0,
-      efficiency_accumulated: 0,
-      yield_percent: 0,
-    };
+  const [draftRows, setDraftRows] = useState<Record<number, ProductionDraft>>({});
+  const [pendingHours, setPendingHours] = useState<Record<number, true>>({});
 
-    const updatedPlan = field === 'plan' ? numValue : hourData.plan;
-    const updatedActual = field === 'actual' ? numValue : hourData.actual;
-    const updatedYield = field === 'yield_percent' ? numValue : hourData.yield_percent || 0;
+  const sequentialHours = useMemo(
+    () => getSequentialHours(startHour, endHour),
+    [startHour, endHour]
+  );
 
-    // Calculate accumulateds
-    let accumulatedPlan = 0;
-    let accumulatedActual = 0;
+  const getRowDraft = useCallback(
+    (hour: number): ProductionDraft => {
+      const data = hourlyData.find((h) => h.hour === hour);
+      return draftRows[hour] || {
+        plan: inputValueFromNumber(data?.plan),
+        actual: inputValueFromNumber(data?.actual),
+        yield_percent: inputValueFromNumber(data?.yield_percent),
+      };
+    },
+    [draftRows, hourlyData]
+  );
 
-    const sequentialHours = getSequentialHours(startHour, endHour);
-    const hourIndex = sequentialHours.indexOf(hour);
-    
-    if (hourIndex !== -1) {
-      // Include all hours from start up to and including current hour
-      for (let i = 0; i <= hourIndex; i++) {
-        const h = sequentialHours[i];
-        const data = hourlyData.find((hd) => hd.hour === h);
-        if (h === hour) {
-          accumulatedPlan += updatedPlan;
-          accumulatedActual += updatedActual;
-        } else {
-          accumulatedPlan += data?.plan || 0;
-          accumulatedActual += data?.actual || 0;
+  const getRowValues = useCallback(
+    (hour: number) => {
+      const draft = getRowDraft(hour);
+
+      return {
+        plan: parseInputNumber(draft.plan),
+        actual: parseInputNumber(draft.actual),
+        yield_percent: parseInputNumber(draft.yield_percent),
+      };
+    },
+    [getRowDraft]
+  );
+
+  const calculateAccumulatedValues = useCallback(
+    (hour: number, nextValues = getRowValues(hour)) => {
+      let accumulatedPlan = 0;
+      let accumulatedActual = 0;
+
+      const hourIndex = sequentialHours.indexOf(hour);
+
+      if (hourIndex !== -1) {
+        for (let i = 0; i <= hourIndex; i++) {
+          const currentHour = sequentialHours[i];
+          const values = currentHour === hour ? nextValues : getRowValues(currentHour);
+          accumulatedPlan += values.plan;
+          accumulatedActual += values.actual;
         }
       }
-    }
 
-    onUpdateHour(hour, updatedPlan, updatedActual, accumulatedPlan, accumulatedActual, updatedYield);
+      return { accumulatedPlan, accumulatedActual };
+    },
+    [getRowValues, sequentialHours]
+  );
+
+  const commitHour = useCallback(
+    (hour: number) => {
+      const values = getRowValues(hour);
+      const { accumulatedPlan, accumulatedActual } = calculateAccumulatedValues(hour, values);
+
+      onUpdateHour(
+        hour,
+        values.plan,
+        values.actual,
+        accumulatedPlan,
+        accumulatedActual,
+        values.yield_percent
+      );
+    },
+    [calculateAccumulatedValues, getRowValues, onUpdateHour]
+  );
+
+  useEffect(() => {
+    if (readOnly || Object.keys(pendingHours).length === 0) return;
+
+    const timeout = setTimeout(() => {
+      Object.keys(pendingHours).forEach((hour) => commitHour(Number(hour)));
+      setPendingHours({});
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [commitHour, pendingHours, readOnly]);
+
+  const handleInputChange = (
+    hour: number,
+    field: EditableProductionField,
+    rawValue: string
+  ) => {
+    if (readOnly) return;
+
+    const value =
+      field === 'yield_percent'
+        ? sanitizeDecimalInput(rawValue)
+        : sanitizeIntegerInput(rawValue);
+
+    const currentDraft = getRowDraft(hour);
+    const nextDraft = {
+      ...currentDraft,
+      [field]: value,
+    };
+
+    setDraftRows((prev) => ({
+      ...prev,
+      [hour]: nextDraft,
+    }));
+    setPendingHours((prev) => ({
+      ...prev,
+      [hour]: true,
+    }));
+  };
+
+  const handleInputBlur = (hour: number) => {
+    if (readOnly || !pendingHours[hour]) return;
+
+    commitHour(hour);
+    setPendingHours((prev) => {
+      const next = { ...prev };
+      delete next[hour];
+      return next;
+    });
   };
 
   const getTimeSlots = () => {
-    return getSequentialHours(startHour, endHour);
+    return sequentialHours;
   };
 
   return (
@@ -273,23 +381,20 @@ export default function ProductionTable({
         </thead>
         <tbody>
           {getTimeSlots().map((hour, index) => {
-            const data = hourlyData.find((h) => h.hour === hour);
             const hourProblems = problems.filter((problem) => problem.hour === hour);
-            const plan = data?.plan || 0;
-            const actual = data?.actual || 0;
-            const accPlan = data?.accumulated_plan || 0;
-            const accActual = data?.accumulated_actual || 0;
-            const effHour = data?.efficiency_hour || 0;
-            const effAccum = data?.efficiency_accumulated || 0;
-            const yieldPercent = data?.yield_percent || 0;
+            const draft = getRowDraft(hour);
+            const { plan, actual, yield_percent: yieldPercent } = getRowValues(hour);
+            const { accumulatedPlan: accPlan, accumulatedActual: accActual } =
+              calculateAccumulatedValues(hour);
+            const effHour = plan > 0 ? parseFloat(((actual / plan) * 100).toFixed(2)) : 0;
+            const effAccum =
+              accPlan > 0 ? parseFloat(((accActual / accPlan) * 100).toFixed(2)) : 0;
             const lostMinutes = calculateLostMinutes(plan, actual);
-            const accumulatedLostMinutes = getSequentialHours(startHour, endHour)
+            const accumulatedLostMinutes = sequentialHours
               .slice(0, index + 1)
               .reduce((sum, currentHour) => {
-                const currentData = hourlyData.find((hd) => hd.hour === currentHour);
-                const currentPlan = currentData?.plan || 0;
-                const currentActual = currentData?.actual || 0;
-                return sum + calculateLostMinutes(currentPlan, currentActual);
+                const currentValues = getRowValues(currentHour);
+                return sum + calculateLostMinutes(currentValues.plan, currentValues.actual);
               }, 0);
 
             const productivityTarget = metaProductivity > 0 ? metaProductivity : 95;
@@ -313,9 +418,12 @@ export default function ProductionTable({
                 <td>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <input
-                      type="number"
-                      value={plan || ''}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={draft.plan}
                       onChange={(e) => handleInputChange(hour, 'plan', e.target.value)}
+                      onBlur={() => handleInputBlur(hour)}
                       placeholder="NSR"
                       style={{ marginBottom: '4px' }}
                       readOnly={readOnly}
@@ -330,9 +438,12 @@ export default function ProductionTable({
                 <td>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <input
-                      type="number"
-                      value={actual || ''}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={draft.actual}
                       onChange={(e) => handleInputChange(hour, 'actual', e.target.value)}
+                      onBlur={() => handleInputBlur(hour)}
                       placeholder="NSR"
                       style={{ marginBottom: '4px' }}
                       readOnly={readOnly}
@@ -360,9 +471,11 @@ export default function ProductionTable({
                 {/* Celda Yield */}
                 <td style={{ textAlign: 'center' }}>
                   <input
-                    type="number"
-                    value={yieldPercent || ''}
+                    type="text"
+                    inputMode="decimal"
+                    value={draft.yield_percent}
                     onChange={(e) => handleInputChange(hour, 'yield_percent', e.target.value)}
+                    onBlur={() => handleInputBlur(hour)}
                     placeholder="NSR"
                     className={yieldClass}
                     style={{ border: 'none', background: 'transparent', textAlign: 'center' }}

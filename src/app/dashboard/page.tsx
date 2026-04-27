@@ -39,7 +39,8 @@ const LINE_OPTIONS = ['315', '314', '313', '312'];
 
 function parseNumericField(value: string): number {
   const trimmed = value.trim();
-  return trimmed === '' ? 0 : Number(trimmed);
+  const parsed = trimmed === '' ? 0 : Number(trimmed);
+  return Number.isFinite(parsed) ? parsed : 0;
 }
 
 function normalizeShift(): ProductionBoard['shift'] {
@@ -403,6 +404,7 @@ export default function DashboardPage() {
               readOnly={!canEdit}
             />
             <ProductionTable
+              key={`${selectedMachine}-${board?.id || 'new'}`}
               hourlyData={hourlyData}
               problems={problems}
               model={formState.model}

@@ -6,6 +6,17 @@ import { BoardFormState } from '@/types';
 const LINE_OPTIONS = ['315', '314', '313', '312'];
 const ENGINEER_NAME = 'Sergio B.';
 
+function sanitizeDecimalInput(value: string): string {
+  const cleaned = value.replace(/[^\d.]/g, '');
+  const [whole, ...decimalParts] = cleaned.split('.');
+
+  if (decimalParts.length === 0) {
+    return whole;
+  }
+
+  return `${whole}.${decimalParts.join('')}`;
+}
+
 interface HeaderBoardProps {
   date: string;
   machineCode: string;
@@ -42,9 +53,10 @@ export default function HeaderBoard({
             Meta FPY:
             <input
               style={{ width: '60px' }}
-              type="number"
+              type="text"
+              inputMode="decimal"
               value={formState.meta_fpy}
-              onChange={(e) => onFormChange('meta_fpy', e.target.value)}
+              onChange={(e) => onFormChange('meta_fpy', sanitizeDecimalInput(e.target.value))}
               readOnly={readOnly}
             />
           </div>
@@ -52,9 +64,12 @@ export default function HeaderBoard({
             Meta productividad:
             <input
               style={{ width: '60px' }}
-              type="number"
+              type="text"
+              inputMode="decimal"
               value={formState.meta_productivity}
-              onChange={(e) => onFormChange('meta_productivity', e.target.value)}
+              onChange={(e) =>
+                onFormChange('meta_productivity', sanitizeDecimalInput(e.target.value))
+              }
               readOnly={readOnly}
             />
           </div>
