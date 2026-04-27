@@ -46,6 +46,7 @@ CREATE TABLE hourly_production (
   accumulated_actual INTEGER DEFAULT 0,
   efficiency_hour NUMERIC(5, 2) DEFAULT 0,
   efficiency_accumulated NUMERIC(5, 2) DEFAULT 0,
+  yield_percent NUMERIC(5, 2) DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE(board_id, hour)

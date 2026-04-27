@@ -21,6 +21,9 @@ ALTER TABLE production_boards
   ALTER COLUMN shift SET DEFAULT '423',
   ADD CONSTRAINT production_boards_shift_check CHECK (shift = '423');
 
+ALTER TABLE hourly_production
+  ADD COLUMN IF NOT EXISTS yield_percent NUMERIC(5, 2) DEFAULT 0;
+
 DROP POLICY IF EXISTS "Leaders can view their boards" ON production_boards;
 DROP POLICY IF EXISTS "Leaders can create boards" ON production_boards;
 DROP POLICY IF EXISTS "Leaders can update their boards" ON production_boards;

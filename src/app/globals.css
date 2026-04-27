@@ -189,14 +189,27 @@ table.production-table input:focus {
   font-weight: 800;
   line-height: 1.25;
   overflow-wrap: anywhere;
+  color: var(--header-bg);
 }
 
 .problem-minutes {
   display: block;
-  color: #526273;
+  color: var(--rk-red);
   font-size: 0.8rem;
   font-weight: 700;
   margin-top: 2px;
+}
+
+.lost-minutes {
+  color: var(--rk-red);
+  font-weight: 800;
+}
+
+.lost-minutes-accum {
+  color: var(--rk-red);
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-top: 4px;
 }
 
 .problem-delete,

@@ -266,7 +266,8 @@ export default function DashboardPage() {
     plan: number,
     actual: number,
     accumulatedPlan: number,
-    accumulatedActual: number
+    accumulatedActual: number,
+    yieldPercent: number
   ) => {
     if (!canEdit) return;
 
@@ -280,7 +281,8 @@ export default function DashboardPage() {
       plan,
       actual,
       accumulatedPlan,
-      accumulatedActual
+      accumulatedActual,
+      yieldPercent
     );
 
     if (result) {
@@ -407,6 +409,8 @@ export default function DashboardPage() {
               onUpdateHour={handleUpdateHour}
               onAddProblem={handleAddProblem}
               onDeleteProblem={handleDeleteProblem}
+              metaFpy={parseNumericField(formState.meta_fpy)}
+              metaProductivity={parseNumericField(formState.meta_productivity)}
               readOnly={!canEdit}
             />
           </div>

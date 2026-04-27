@@ -223,7 +223,8 @@ export async function upsertHourlyData(
   plan: number,
   actual: number,
   accumulatedPlan: number,
-  accumulatedActual: number
+  accumulatedActual: number,
+  yieldPercent: number = 0
 ): Promise<HourlyProduction | null> {
   const efficiencyHour =
     plan > 0 ? parseFloat(((actual / plan) * 100).toFixed(2)) : 0;
@@ -244,6 +245,7 @@ export async function upsertHourlyData(
         accumulated_actual: accumulatedActual,
         efficiency_hour: efficiencyHour,
         efficiency_accumulated: efficiencyAccumulated,
+        yield_percent: yieldPercent,
         updated_at: new Date().toISOString(),
       },
       {

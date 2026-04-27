@@ -41,6 +41,7 @@ export interface HourlyProduction {
   accumulated_actual: number;
   efficiency_hour: number;
   efficiency_accumulated: number;
+  yield_percent: number;
   created_at: string;
   updated_at: string;
 }

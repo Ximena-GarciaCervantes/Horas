@@ -14,10 +14,13 @@ interface ProductionTableProps {
     plan: number,
     actual: number,
     accumulatedPlan: number,
-    accumulatedActual: number
+    accumulatedActual: number,
+    yieldPercent: number
   ) => void;
   onAddProblem: (problem: Omit<Problem, 'id' | 'created_at' | 'updated_at'>) => Promise<boolean>;
   onDeleteProblem?: (id: string) => void;
+  metaFpy?: number;
+  metaProductivity?: number;
   readOnly?: boolean;
   startHour?: number;
   endHour?: number;
@@ -187,13 +190,15 @@ export default function ProductionTable({
   onUpdateHour,
   onAddProblem,
   onDeleteProblem,
+  metaFpy = 0,
+  metaProductivity = 0,
   readOnly = false,
   startHour = 18,
   endHour = 6,
 }: ProductionTableProps) {
   const handleInputChange = (
     hour: number,
-    field: 'plan' | 'actual',
+    field: 'plan' | 'actual' | 'yield_percent',
     value: string
   ) => {
     const numValue = parseFloat(value) || 0;
@@ -205,10 +210,12 @@ export default function ProductionTable({
       accumulated_actual: 0,
       efficiency_hour: 0,
       efficiency_accumulated: 0,
+      yield_percent: 0,
     };
 
     const updatedPlan = field === 'plan' ? numValue : hourData.plan;
     const updatedActual = field === 'actual' ? numValue : hourData.actual;
+    const updatedYield = field === 'yield_percent' ? numValue : hourData.yield_percent || 0;
 
     // Calculate accumulateds
     let accumulatedPlan = 0;
@@ -232,7 +239,7 @@ export default function ProductionTable({
       }
     }
 
-    onUpdateHour(hour, updatedPlan, updatedActual, accumulatedPlan, accumulatedActual);
+    onUpdateHour(hour, updatedPlan, updatedActual, accumulatedPlan, accumulatedActual, updatedYield);
   };
 
   const getTimeSlots = () => {
@@ -274,6 +281,7 @@ export default function ProductionTable({
             const accActual = data?.accumulated_actual || 0;
             const effHour = data?.efficiency_hour || 0;
             const effAccum = data?.efficiency_accumulated || 0;
+            const yieldPercent = data?.yield_percent || 0;
             const lostMinutes = calculateLostMinutes(plan, actual);
             const accumulatedLostMinutes = getSequentialHours(startHour, endHour)
               .slice(0, index + 1)
@@ -284,7 +292,10 @@ export default function ProductionTable({
                 return sum + calculateLostMinutes(currentPlan, currentActual);
               }, 0);
 
-            const effHourClass = effHour >= 95 ? 'val-good' : effHour > 0 ? 'val-bad' : 'val-neutral';
+            const productivityTarget = metaProductivity > 0 ? metaProductivity : 95;
+            const fpyTarget = metaFpy > 0 ? metaFpy : 95;
+            const effHourClass = effHour >= productivityTarget ? 'val-good' : effHour > 0 ? 'val-bad' : 'val-neutral';
+            const yieldClass = yieldPercent >= fpyTarget ? 'val-good' : yieldPercent > 0 ? 'val-bad' : 'val-neutral';
 
             return (
               <tr key={hour} className={index % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
@@ -349,8 +360,11 @@ export default function ProductionTable({
                 {/* Celda Yield */}
                 <td style={{ textAlign: 'center' }}>
                   <input
-                    type="text"
+                    type="number"
+                    value={yieldPercent || ''}
+                    onChange={(e) => handleInputChange(hour, 'yield_percent', e.target.value)}
                     placeholder="NSR"
+                    className={yieldClass}
                     style={{ border: 'none', background: 'transparent', textAlign: 'center' }}
                     readOnly={readOnly}
                   />
@@ -359,8 +373,8 @@ export default function ProductionTable({
                 {/* Celda Minutos Perdidos */}
                 <td>
                   <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                    <span style={{ fontWeight: 'bold' }}>{lostMinutes.toFixed(1)}</span>
-                    <span style={{ fontSize: '0.85rem', marginTop: '4px' }}>{accumulatedLostMinutes.toFixed(1)}</span>
+                    <span className="lost-minutes">{lostMinutes.toFixed(1)}</span>
+                    <span className="lost-minutes-accum">{accumulatedLostMinutes.toFixed(1)}</span>
                   </div>
                 </td>
 
