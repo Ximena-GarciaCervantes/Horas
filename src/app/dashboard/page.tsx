@@ -114,6 +114,83 @@ export default function DashboardPage() {
     return createdBoard;
   }, [board, buildBoardPayload, canEdit, selectedMachine, today, user]);
 
+  const applyBoardData = useCallback(
+    async (boardData: ProductionBoard | null, showEmptyNotice = true) => {
+      if (!user) return;
+
+      if (boardData) {
+        setBoard(boardData);
+        setFormState({
+          leader_name: boardData.leader_name || user.name,
+          supervisor_name: boardData.supervisor_name || '',
+          shift: normalizeShift(),
+          model: boardData.model || DEFAULT_MODEL,
+          daily_goal: boardData.daily_goal || 0,
+          meta_fpy: String(boardData.meta_fpy ?? ''),
+          meta_productivity: String(boardData.meta_productivity ?? ''),
+          engineer: DEFAULT_ENGINEER,
+          line: normalizeLine(boardData.line || ''),
+          process_type: boardData.process_type || '',
+          operator: boardData.operator || '',
+        });
+
+        const [hourData, problemsData] = await Promise.all([
+          getHourlyData(boardData.id),
+          getProblems(boardData.id),
+        ]);
+        setHourlyData(hourData);
+        setProblems(problemsData);
+        return;
+      }
+
+      if (!showEmptyNotice) return;
+
+      setBoard(null);
+      setHourlyData([]);
+      setProblems([]);
+      setFormState((prev) => ({
+        ...prev,
+        leader_name: user.name,
+        supervisor_name: '',
+        shift: normalizeShift(),
+        model: DEFAULT_MODEL,
+        daily_goal: 0,
+        meta_fpy: '',
+        meta_productivity: '',
+        engineer: DEFAULT_ENGINEER,
+        line: DEFAULT_LINE,
+        process_type: '',
+        operator: '',
+      }));
+    },
+    [user]
+  );
+
+  const refreshBoardData = useCallback(
+    async (showLoadingState = false, showEmptyNotice = true) => {
+      if (!user || !selectedMachine) return;
+
+      if (showLoadingState) {
+        setLoadingBoard(true);
+      }
+
+      try {
+        const boardData = await getBoardByMachineAndDate(selectedMachine, today);
+        await applyBoardData(boardData, showEmptyNotice);
+      } catch (error) {
+        console.error('Error loading board data:', error);
+        if (showEmptyNotice) {
+          setBoard(null);
+        }
+      } finally {
+        if (showLoadingState) {
+          setLoadingBoard(false);
+        }
+      }
+    },
+    [applyBoardData, selectedMachine, today, user]
+  );
+
   // Check authentication
   useEffect(() => {
     const checkAuth = async () => {
@@ -150,65 +227,18 @@ export default function DashboardPage() {
 
   // Load board data
   useEffect(() => {
-    if (!user || !selectedMachine) return;
+    refreshBoardData(true);
+  }, [refreshBoardData]);
 
-    const loadBoardData = async () => {
-      setLoadingBoard(true);
-      try {
-        const boardData = await getBoardByMachineAndDate(selectedMachine, today);
+  useEffect(() => {
+    if (!user || canEdit) return;
 
-        if (boardData) {
-          setBoard(boardData);
-          setFormState({
-            leader_name: boardData.leader_name || user.name,
-            supervisor_name: boardData.supervisor_name || '',
-            shift: normalizeShift(),
-            model: boardData.model || DEFAULT_MODEL,
-            daily_goal: boardData.daily_goal || 0,
-            meta_fpy: String(boardData.meta_fpy ?? ''),
-            meta_productivity: String(boardData.meta_productivity ?? ''),
-            engineer: DEFAULT_ENGINEER,
-            line: normalizeLine(boardData.line || ''),
-            process_type: boardData.process_type || '',
-            operator: boardData.operator || '',
-          });
+    const interval = setInterval(() => {
+      refreshBoardData(false, false);
+    }, 4000);
 
-          // Load hourly data
-          const hourData = await getHourlyData(boardData.id);
-          setHourlyData(hourData);
-
-          // Load problems
-          const problemsData = await getProblems(boardData.id);
-          setProblems(problemsData);
-        } else {
-          setBoard(null);
-          setHourlyData([]);
-          setProblems([]);
-          setFormState((prev) => ({
-            ...prev,
-            leader_name: user.name,
-            supervisor_name: '',
-            shift: normalizeShift(),
-            model: DEFAULT_MODEL,
-            daily_goal: 0,
-            meta_fpy: '',
-            meta_productivity: '',
-            engineer: DEFAULT_ENGINEER,
-            line: DEFAULT_LINE,
-            process_type: '',
-            operator: '',
-          }));
-        }
-      } catch (error) {
-        console.error('Error loading board data:', error);
-        setBoard(null);
-      } finally {
-        setLoadingBoard(false);
-      }
-    };
-
-    loadBoardData();
-  }, [user, selectedMachine, today]);
+    return () => clearInterval(interval);
+  }, [canEdit, refreshBoardData, user]);
 
   useEffect(() => {
     if (!user || loading || loadingBoard || !canEdit) return;
@@ -269,12 +299,17 @@ export default function DashboardPage() {
     accumulatedPlan: number,
     accumulatedActual: number,
     yieldPercent: number
-  ) => {
-    if (!canEdit) return;
+  ): Promise<boolean> => {
+    if (!canEdit) return false;
 
     const activeBoard = await ensureBoard();
 
-    if (!activeBoard) return;
+    if (!activeBoard) {
+      setSaveState('error');
+      return false;
+    }
+
+    setSaveState('saving');
 
     const result = await upsertHourlyData(
       activeBoard.id,
@@ -291,7 +326,13 @@ export default function DashboardPage() {
         const updated = prev.filter((h) => h.hour !== hour);
         return [...updated, result].sort((a, b) => a.hour - b.hour);
       });
+      setSaveState('saved');
+      setTimeout(() => setSaveState('idle'), 3000);
+      return true;
     }
+
+    setSaveState('error');
+    return false;
   };
 
   const handleAddProblem = async (

@@ -16,7 +16,7 @@ interface ProductionTableProps {
     accumulatedPlan: number,
     accumulatedActual: number,
     yieldPercent: number
-  ) => void;
+  ) => Promise<boolean>;
   onAddProblem: (problem: Omit<Problem, 'id' | 'created_at' | 'updated_at'>) => Promise<boolean>;
   onDeleteProblem?: (id: string) => void;
   metaFpy?: number;
@@ -284,11 +284,11 @@ export default function ProductionTable({
   );
 
   const commitHour = useCallback(
-    (hour: number) => {
+    async (hour: number): Promise<boolean> => {
       const values = getRowValues(hour);
       const { accumulatedPlan, accumulatedActual } = calculateAccumulatedValues(hour, values);
 
-      onUpdateHour(
+      return onUpdateHour(
         hour,
         values.plan,
         values.actual,
@@ -302,13 +302,21 @@ export default function ProductionTable({
 
   useEffect(() => {
     if (readOnly || Object.keys(pendingHours).length === 0) return;
+    let isActive = true;
 
     const timeout = setTimeout(() => {
-      Object.keys(pendingHours).forEach((hour) => commitHour(Number(hour)));
-      setPendingHours({});
+      const hoursToSave = Object.keys(pendingHours).map(Number);
+
+      Promise.all(hoursToSave.map((hour) => commitHour(hour))).then(() => {
+        if (!isActive) return;
+        setPendingHours({});
+      });
     }, 500);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      isActive = false;
+      clearTimeout(timeout);
+    };
   }, [commitHour, pendingHours, readOnly]);
 
   const handleInputChange = (
@@ -339,10 +347,10 @@ export default function ProductionTable({
     }));
   };
 
-  const handleInputBlur = (hour: number) => {
+  const handleInputBlur = async (hour: number) => {
     if (readOnly || !pendingHours[hour]) return;
 
-    commitHour(hour);
+    await commitHour(hour);
     setPendingHours((prev) => {
       const next = { ...prev };
       delete next[hour];
