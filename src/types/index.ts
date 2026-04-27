@@ -16,7 +16,7 @@ export interface ProductionBoard {
   leader_id: string;
   leader_name: string;
   supervisor_name: string;
-  shift: '1' | '2' | '3';
+  shift: '423';
   model: string;
   daily_goal: number;
   meta_fpy: number;

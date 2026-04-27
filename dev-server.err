@@ -1,0 +1,267 @@
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (216kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ⨯ Error: Cannot find module './152.js'
+Require stack:
+- C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+- C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\dashboard\page.js
+- C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+- C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+- C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+- C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\lib\start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1456:15)
+    at C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1066:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1071:22)
+    at Module._load (node:internal/modules/cjs/loader:1242:25)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1556:12)
+    at mod.require (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js:198:28)
+    at C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js:111:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js:110:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js:162:22)
+    at C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\_not-found\page.js:1:4759
+    at Object.<anonymous> (C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\_not-found\page.js:1:4800)
+    at Module._compile (node:internal/modules/cjs/loader:1812:14)
+    at Object..js (node:internal/modules/cjs/loader:1943:10)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1556:12)
+    at mod.require (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js:109:84)
+    at C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js:103:84
+    at async loadComponentsImpl (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js:103:26)
+    at async DevServer.findPageComponentsImpl (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\next-server.js:714:36)
+    at async DevServer.findPageComponents (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\dev\next-dev-server.js:577:20)
+    at async DevServer.renderErrorToResponseImpl (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\base-server.js:2090:30)
+    at async pipe.req.req (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\base-server.js:2056:30)
+    at async DevServer.pipeImpl (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\base-server.js:922:25)
+    at async C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\lib\router-server.js:374:24)
+    at async requestHandlerImpl (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\Travi\\OneDrive\\Documentos\\Horas\\.next\\server\\webpack-runtime.js',
+    'C:\\Users\\Travi\\OneDrive\\Documentos\\Horas\\.next\\server\\app\\dashboard\\page.js',
+    'C:\\Users\\Travi\\OneDrive\\Documentos\\Horas\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\Users\\Travi\\OneDrive\\Documentos\\Horas\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\Users\\Travi\\OneDrive\\Documentos\\Horas\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\Users\\Travi\\OneDrive\\Documentos\\Horas\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+    'C:\\Users\\Travi\\OneDrive\\Documentos\\Horas\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+    'C:\\Users\\Travi\\OneDrive\\Documentos\\Horas\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+    'C:\\Users\\Travi\\OneDrive\\Documentos\\Horas\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+    'C:\\Users\\Travi\\OneDrive\\Documentos\\Horas\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+  ]
+}
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\html2canvas.js'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/html2canvas' in C:\Users\Travi\OneDrive\Documentos\Horas\.next\server for build dependencies doesn't lead to expected result 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\html2canvas.js', but to 'Error: Can't resolve './vendor-chunks/html2canvas' in 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/html2canvas (expected C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\html2canvas.js)
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\_not-found\page.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\_not-found\page.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\handle-externals.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\handle-externals.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at resolve commonjs C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/jspdf' in C:\Users\Travi\OneDrive\Documentos\Horas\.next\server for build dependencies doesn't lead to expected result 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\jspdf.js', but to 'Error: Can't resolve './vendor-chunks/jspdf' in 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/jspdf (expected C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\jspdf.js)
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\_not-found\page.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\_not-found\page.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\handle-externals.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\handle-externals.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at resolve commonjs C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/fflate' in C:\Users\Travi\OneDrive\Documentos\Horas\.next\server for build dependencies doesn't lead to expected result 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\fflate.js', but to 'Error: Can't resolve './vendor-chunks/fflate' in 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/fflate (expected C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\fflate.js)
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\_not-found\page.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\_not-found\page.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\handle-externals.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\handle-externals.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at resolve commonjs C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\html2canvas.js'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/html2canvas' in C:\Users\Travi\OneDrive\Documentos\Horas\.next\server for build dependencies doesn't lead to expected result 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\html2canvas.js', but to 'Error: Can't resolve './vendor-chunks/html2canvas' in 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/html2canvas (expected C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\html2canvas.js)
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\dashboard\page.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\dashboard\page.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at resolve commonjs C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/jspdf' in C:\Users\Travi\OneDrive\Documentos\Horas\.next\server for build dependencies doesn't lead to expected result 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\jspdf.js', but to 'Error: Can't resolve './vendor-chunks/jspdf' in 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/jspdf (expected C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\jspdf.js)
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\dashboard\page.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\dashboard\page.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at resolve commonjs C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/fflate' in C:\Users\Travi\OneDrive\Documentos\Horas\.next\server for build dependencies doesn't lead to expected result 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\fflate.js', but to 'Error: Can't resolve './vendor-chunks/fflate' in 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/fflate (expected C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\fflate.js)
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\dashboard\page.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\dashboard\page.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at resolve commonjs C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/@babel' in C:\Users\Travi\OneDrive\Documentos\Horas\.next\server for build dependencies doesn't lead to expected result 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\@babel.js', but to 'Error: Can't resolve './vendor-chunks/@babel' in 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/@babel (expected C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\@babel.js)
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\dashboard\page.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\dashboard\page.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at resolve commonjs C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/iceberg-js' in C:\Users\Travi\OneDrive\Documentos\Horas\.next\server for build dependencies doesn't lead to expected result 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\iceberg-js.js', but to 'Error: Can't resolve './vendor-chunks/iceberg-js' in 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/iceberg-js (expected C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\iceberg-js.js)
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\dashboard\page.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\dashboard\page.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at resolve commonjs C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/tslib' in C:\Users\Travi\OneDrive\Documentos\Horas\.next\server for build dependencies doesn't lead to expected result 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\tslib.js', but to 'Error: Can't resolve './vendor-chunks/tslib' in 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/tslib (expected C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\vendor-chunks\tslib.js)
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\webpack-runtime.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\dashboard\page.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\app\dashboard\page.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at file C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at resolve commonjs C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+ ⨯ Error: Invariant: missing bootstrap script. This is a bug in Next.js
+    at rP (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:40:2253)
+    at C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:40:25567
+    at C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\lib\trace\tracer.js:191:62
+    at C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854)
+    at C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\lib\trace\tracer.js:122:103
+    at NoopContextManager.with (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NextTracerImpl.trace (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\lib\trace\tracer.js:122:28)
+    at C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\lib\trace\tracer.js:191:31
+    at ne (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:42:1678)
+    at async doRender (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\base-server.js:1427:30)
+    at async cacheEntry.responseCache.get.routeKind (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\base-server.js:1588:28) {
+  page: '/'
+}
+ ⨯ Error: Cannot find module 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\server\pages\_document.js'
+Require stack:
+- C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js
+- C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js
+- C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\build\utils.js
+- C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\lib\start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1456:15)
+    at C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1066:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1071:22)
+    at Module._load (node:internal/modules/cjs/loader:1242:25)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1556:12)
+    at mod.require (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\require.js:109:84)
+    at C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js:72:65
+    at async Promise.all (index 0)
+    at async loadComponentsImpl (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\load-components.js:71:33)
+    at async DevServer.findPageComponentsImpl (C:\Users\Travi\OneDrive\Documentos\Horas\node_modules\next\dist\server\next-server.js:714:36) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\Travi\\OneDrive\\Documentos\\Horas\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\Users\\Travi\\OneDrive\\Documentos\\Horas\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\Users\\Travi\\OneDrive\\Documentos\\Horas\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\Users\\Travi\\OneDrive\\Documentos\\Horas\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+    'C:\\Users\\Travi\\OneDrive\\Documentos\\Horas\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+    'C:\\Users\\Travi\\OneDrive\\Documentos\\Horas\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+    'C:\\Users\\Travi\\OneDrive\\Documentos\\Horas\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+    'C:\\Users\\Travi\\OneDrive\\Documentos\\Horas\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+  ]
+}
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\cache\webpack\server-development\1.pack.gz_' -> 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\cache\webpack\server-development\1.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\cache\webpack\client-development\1.pack.gz_' -> 'C:\Users\Travi\OneDrive\Documentos\Horas\.next\cache\webpack\client-development\1.pack.gz'

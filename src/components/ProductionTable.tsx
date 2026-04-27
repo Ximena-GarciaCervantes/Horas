@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { HourlyProduction, Problem } from '@/types';
 import { calculateLostMinutes, formatPercentage } from '@/lib/utils';
+import { Plus, Trash2 } from 'lucide-react';
 
 interface ProductionTableProps {
   hourlyData: HourlyProduction[];
@@ -15,6 +16,9 @@ interface ProductionTableProps {
     accumulatedPlan: number,
     accumulatedActual: number
   ) => void;
+  onAddProblem: (problem: Omit<Problem, 'id' | 'created_at' | 'updated_at'>) => Promise<boolean>;
+  onDeleteProblem?: (id: string) => void;
+  readOnly?: boolean;
   startHour?: number;
   endHour?: number;
 }
@@ -45,11 +49,145 @@ function getSequentialHours(startHour: number, endHour: number): number[] {
   return hours;
 }
 
+interface ProblemCellProps {
+  hour: number;
+  hourProblems: Problem[];
+  calculatedLostMinutes: number;
+  onAddProblem: (problem: Omit<Problem, 'id' | 'created_at' | 'updated_at'>) => Promise<boolean>;
+  onDeleteProblem?: (id: string) => void;
+  readOnly?: boolean;
+}
+
+function ProblemCell({
+  hour,
+  hourProblems,
+  calculatedLostMinutes,
+  onAddProblem,
+  onDeleteProblem,
+  readOnly = false,
+}: ProblemCellProps) {
+  const assignedMinutes = hourProblems.reduce(
+    (sum, problem) => sum + (problem.minutes_lost || 0),
+    0
+  );
+  const suggestedMinutes = Math.max(Math.round(calculatedLostMinutes - assignedMinutes), 0);
+  const fallbackMinutes = Math.max(Math.round(calculatedLostMinutes), 0);
+  const [description, setDescription] = useState('');
+  const [minutesLost, setMinutesLost] = useState('');
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'error'>('idle');
+
+  const handleAddProblem = async () => {
+    const trimmedDescription = description.trim();
+    if (!trimmedDescription) return;
+
+    const parsedMinutes = Number(minutesLost);
+    const nextMinutes = Number.isFinite(parsedMinutes) && parsedMinutes > 0
+      ? Math.round(parsedMinutes)
+      : suggestedMinutes || fallbackMinutes;
+
+    setSaveState('saving');
+    const saved = await onAddProblem({
+      hour,
+      description: trimmedDescription,
+      minutes_lost: nextMinutes,
+      responsible: '',
+      corrective_action: '',
+      board_id: '',
+    });
+
+    if (saved) {
+      setDescription('');
+      setMinutesLost('');
+      setSaveState('idle');
+      return;
+    }
+
+    setSaveState('error');
+  };
+
+  return (
+    <div className="problem-cell">
+      {hourProblems.length > 0 && (
+        <ul className="problem-list">
+          {hourProblems.map((problem) => (
+            <li key={problem.id} className="problem-list-item">
+              <div>
+                <span className="problem-description">{problem.description}</span>
+                <span className="problem-minutes"> {problem.minutes_lost} min</span>
+              </div>
+              {!readOnly && onDeleteProblem && (
+                <button
+                  type="button"
+                  onClick={() => onDeleteProblem(problem.id)}
+                  className="problem-delete"
+                  title="Eliminar problema"
+                >
+                  <Trash2 size={14} />
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {!readOnly && (
+        <>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="problem-input"
+            placeholder="Escribe el problema"
+            rows={2}
+          />
+
+          <div className="problem-actions">
+            <label className="problem-minutes-field">
+              Min.
+              <input
+                type="number"
+                min="0"
+                value={minutesLost}
+                onChange={(e) => setMinutesLost(e.target.value)}
+                placeholder={String(suggestedMinutes || fallbackMinutes || 0)}
+              />
+            </label>
+            <button
+              type="button"
+              onClick={handleAddProblem}
+              disabled={!description.trim() || saveState === 'saving'}
+              className="problem-add"
+              title="Agregar problema"
+            >
+              <Plus size={15} />
+            </button>
+          </div>
+
+          {saveState === 'saving' && (
+            <div className="problem-save-state">Guardando problema...</div>
+          )}
+          {saveState === 'error' && (
+            <div className="problem-save-state problem-save-error">
+              No se pudo guardar. Revisa permisos o conexion.
+            </div>
+          )}
+        </>
+      )}
+
+      <div className="problem-summary">
+        Calculado: {calculatedLostMinutes.toFixed(1)} min | Asignado: {assignedMinutes} min
+      </div>
+    </div>
+  );
+}
+
 export default function ProductionTable({
   hourlyData,
   problems = [],
   model = '13576-Z',
   onUpdateHour,
+  onAddProblem,
+  onDeleteProblem,
+  readOnly = false,
   startHour = 18,
   endHour = 6,
 }: ProductionTableProps) {
@@ -169,6 +307,7 @@ export default function ProductionTable({
                       onChange={(e) => handleInputChange(hour, 'plan', e.target.value)}
                       placeholder="NSR"
                       style={{ marginBottom: '4px' }}
+                      readOnly={readOnly}
                     />
                     <div style={{ fontSize: '0.9rem', fontWeight: 'bold', textAlign: 'center' }}>
                       {accPlan > 0 ? accPlan : ''}
@@ -185,6 +324,7 @@ export default function ProductionTable({
                       onChange={(e) => handleInputChange(hour, 'actual', e.target.value)}
                       placeholder="NSR"
                       style={{ marginBottom: '4px' }}
+                      readOnly={readOnly}
                     />
                     <div style={{ fontSize: '0.9rem', fontWeight: 'bold', textAlign: 'center' }}>
                       {accActual > 0 ? accActual : ''}
@@ -212,6 +352,7 @@ export default function ProductionTable({
                     type="text"
                     placeholder="NSR"
                     style={{ border: 'none', background: 'transparent', textAlign: 'center' }}
+                    readOnly={readOnly}
                   />
                 </td>
 
@@ -225,20 +366,14 @@ export default function ProductionTable({
 
                 {/* Celda Problemas */}
                 <td style={{ textAlign: 'left', verticalAlign: 'top', padding: '4px' }}>
-                  <div style={{ fontSize: '0.9rem', lineHeight: '1.4' }}>
-                    {hourProblems.length === 0 ? (
-                      <span style={{ color: '#999' }}>Sin problemas</span>
-                    ) : (
-                      <ul style={{ margin: 0, paddingLeft: '18px', listStyleType: 'disc' }}>
-                        {hourProblems.map((problem) => (
-                          <li key={problem.id} style={{ marginBottom: '4px' }}>
-                            <span style={{ fontWeight: 700 }}>{problem.description}</span>
-                            <span style={{ color: '#666' }}> - {problem.minutes_lost} min</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
+                  <ProblemCell
+                    hour={hour}
+                    hourProblems={hourProblems}
+                    calculatedLostMinutes={lostMinutes}
+                    onAddProblem={onAddProblem}
+                    onDeleteProblem={onDeleteProblem}
+                    readOnly={readOnly}
+                  />
                 </td>
               </tr>
             );

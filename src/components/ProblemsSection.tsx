@@ -7,14 +7,16 @@ import { Trash2, Plus } from 'lucide-react';
 
 interface ProblemsSectionProps {
   problems: Problem[];
-  onAddProblem: (problem: Omit<Problem, 'id' | 'created_at' | 'updated_at'>) => void;
+  onAddProblem: (problem: Omit<Problem, 'id' | 'created_at' | 'updated_at'>) => Promise<boolean>;
   onDeleteProblem: (id: string) => void;
+  readOnly?: boolean;
 }
 
 export default function ProblemsSection({
   problems,
   onAddProblem,
   onDeleteProblem,
+  readOnly = false,
 }: ProblemsSectionProps) {
   const [newProblem, setNewProblem] = useState({
     hour: 6,
@@ -24,10 +26,10 @@ export default function ProblemsSection({
     corrective_action: '',
   });
 
-  const handleAddProblem = () => {
+  const handleAddProblem = async () => {
     if (newProblem.description.trim() === '') return;
 
-    onAddProblem({
+    const saved = await onAddProblem({
       hour: newProblem.hour,
       description: newProblem.description,
       minutes_lost: newProblem.minutes_lost,
@@ -35,6 +37,8 @@ export default function ProblemsSection({
       corrective_action: newProblem.corrective_action,
       board_id: '', // Will be set by parent component
     });
+
+    if (!saved) return;
 
     setNewProblem({
       hour: 6,
@@ -50,6 +54,7 @@ export default function ProblemsSection({
       <h3 className="section-heading">Problemas / Incidencias</h3>
 
       {/* Add New Problem */}
+      {!readOnly && (
       <div className="mb-6 p-4 bg-rk-light rounded-lg">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
           <div>
@@ -158,6 +163,7 @@ export default function ProblemsSection({
           Añadir Incidencia
         </button>
       </div>
+      )}
 
       {/* Problems List */}
       <div className="space-y-3">
@@ -181,13 +187,15 @@ export default function ProblemsSection({
                       <strong>Acción:</strong> {problem.corrective_action}
                     </p>
                   </div>
-                  <button
-                    onClick={() => onDeleteProblem(problem.id)}
-                    className="text-rk-red hover:bg-rk-red hover:bg-opacity-10 p-2 rounded transition"
-                    title="Eliminar"
-                  >
-                    <Trash2 size={18} />
-                  </button>
+                  {!readOnly && (
+                    <button
+                      onClick={() => onDeleteProblem(problem.id)}
+                      className="text-rk-red hover:bg-rk-red hover:bg-opacity-10 p-2 rounded transition"
+                      title="Eliminar"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  )}
                 </div>
               </li>
             ))}

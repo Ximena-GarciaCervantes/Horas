@@ -4,8 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import {
-  getLatestBoardByLeaderAndMachine,
-  getLatestBoardByMachine,
+  getBoardByMachineAndDate,
   createBoard,
   updateBoard,
   getHourlyData,
@@ -15,7 +14,7 @@ import {
   deleteProblem,
   calculateKPIs,
 } from '@/lib/database';
-import { debounce, formatDate } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
 import MachineTabs from '@/components/MachineTabs';
 import HeaderBoard from '@/components/HeaderBoard';
 import ProductionTable from '@/components/ProductionTable';
@@ -33,10 +32,22 @@ import type {
 } from '@/types';
 
 const DEFAULT_MODEL = '13576-Z';
+const DEFAULT_ENGINEER = 'Sergio B.';
+const DEFAULT_LINE = '315';
+const DEFAULT_SHIFT = '423';
+const LINE_OPTIONS = ['315', '314', '313', '312'];
 
 function parseNumericField(value: string): number {
   const trimmed = value.trim();
   return trimmed === '' ? 0 : Number(trimmed);
+}
+
+function normalizeShift(): ProductionBoard['shift'] {
+  return DEFAULT_SHIFT;
+}
+
+function normalizeLine(value: string): string {
+  return LINE_OPTIONS.includes(value) ? value : DEFAULT_LINE;
 }
 
 export default function DashboardPage() {
@@ -48,21 +59,59 @@ export default function DashboardPage() {
   const [problems, setProblems] = useState<Problem[]>([]);
   const [saveState, setSaveState] = useState<SaveState>('idle');
   const [loading, setLoading] = useState(true);
+  const [loadingBoard, setLoadingBoard] = useState(false);
   const [formState, setFormState] = useState<BoardFormState>({
     leader_name: '',
     supervisor_name: '',
-    shift: '1',
+    shift: DEFAULT_SHIFT,
     model: DEFAULT_MODEL,
     daily_goal: 0,
     meta_fpy: '',
     meta_productivity: '',
-    engineer: '',
-    line: '',
+    engineer: DEFAULT_ENGINEER,
+    line: DEFAULT_LINE,
     process_type: '',
     operator: '',
   });
 
   const today = formatDate(new Date());
+  const canEdit = user ? user.role !== 'supervisor' : false;
+
+  const buildBoardPayload = useCallback(
+    (): Partial<ProductionBoard> => ({
+      machine_code: selectedMachine,
+      date: today,
+      leader_id: user?.id || '',
+      leader_name: formState.leader_name || user?.name || '',
+      supervisor_name: formState.supervisor_name || '',
+      shift: normalizeShift(),
+      model: formState.model || DEFAULT_MODEL,
+      daily_goal: formState.daily_goal || 0,
+      meta_fpy: parseNumericField(formState.meta_fpy),
+      meta_productivity: parseNumericField(formState.meta_productivity),
+      engineer: DEFAULT_ENGINEER,
+      line: normalizeLine(formState.line),
+      process_type: formState.process_type || '',
+      operator: formState.operator || '',
+      created_by: user?.id || '',
+    }),
+    [formState, selectedMachine, today, user]
+  );
+
+  const ensureBoard = useCallback(async (): Promise<ProductionBoard | null> => {
+    if (board && board.machine_code === selectedMachine && board.date === today) {
+      return board;
+    }
+
+    if (!user || !canEdit) return null;
+
+    const createdBoard = await createBoard(buildBoardPayload());
+    if (createdBoard) {
+      setBoard(createdBoard);
+    }
+
+    return createdBoard;
+  }, [board, buildBoardPayload, canEdit, selectedMachine, today, user]);
 
   // Check authentication
   useEffect(() => {
@@ -103,42 +152,22 @@ export default function DashboardPage() {
     if (!user || !selectedMachine) return;
 
     const loadBoardData = async () => {
+      setLoadingBoard(true);
       try {
-        // Get the latest board for this machine, regardless of day
-        let boardData = await getLatestBoardByMachine(selectedMachine);
-
-        if (!boardData) {
-          boardData = await createBoard({
-            machine_code: selectedMachine,
-            date: today,
-            leader_id: user.id,
-            leader_name: user.name,
-            supervisor_name: '',
-            shift: formState.shift || '1',
-            model: DEFAULT_MODEL,
-            daily_goal: 0,
-            meta_fpy: 0,
-            meta_productivity: 0,
-            engineer: '',
-            line: selectedMachine,
-            process_type: '',
-            operator: '',
-            created_by: user.id,
-          });
-        }
+        const boardData = await getBoardByMachineAndDate(selectedMachine, today);
 
         if (boardData) {
           setBoard(boardData);
           setFormState({
             leader_name: boardData.leader_name || user.name,
             supervisor_name: boardData.supervisor_name || '',
-            shift: boardData.shift || '1',
+            shift: normalizeShift(),
             model: boardData.model || DEFAULT_MODEL,
             daily_goal: boardData.daily_goal || 0,
             meta_fpy: String(boardData.meta_fpy ?? ''),
             meta_productivity: String(boardData.meta_productivity ?? ''),
-            engineer: boardData.engineer || '',
-            line: boardData.line || '',
+            engineer: DEFAULT_ENGINEER,
+            line: normalizeLine(boardData.line || ''),
             process_type: boardData.process_type || '',
             operator: boardData.operator || '',
           });
@@ -152,28 +181,53 @@ export default function DashboardPage() {
           setProblems(problemsData);
         } else {
           setBoard(null);
+          setHourlyData([]);
+          setProblems([]);
+          setFormState((prev) => ({
+            ...prev,
+            leader_name: user.name,
+            supervisor_name: '',
+            shift: normalizeShift(),
+            model: DEFAULT_MODEL,
+            daily_goal: 0,
+            meta_fpy: '',
+            meta_productivity: '',
+            engineer: DEFAULT_ENGINEER,
+            line: DEFAULT_LINE,
+            process_type: '',
+            operator: '',
+          }));
         }
       } catch (error) {
         console.error('Error loading board data:', error);
         setBoard(null);
+      } finally {
+        setLoadingBoard(false);
       }
     };
 
     loadBoardData();
   }, [user, selectedMachine, today]);
 
-  // Auto-save with debounce
-  const autoSave = useCallback(
-    debounce(async () => {
-      if (!board) return;
+  useEffect(() => {
+    if (!user || loading || loadingBoard || !canEdit) return;
 
+    const timeout = setTimeout(async () => {
       setSaveState('saving');
       try {
-        const success = await updateBoard(board.id, {
+        const activeBoard = await ensureBoard();
+        if (!activeBoard) {
+          setSaveState('error');
+          return;
+        }
+
+        const success = await updateBoard(activeBoard.id, {
           ...formState,
-          shift: formState.shift || '1',
+          shift: normalizeShift(),
           meta_fpy: parseNumericField(formState.meta_fpy),
           meta_productivity: parseNumericField(formState.meta_productivity),
+          engineer: DEFAULT_ENGINEER,
+          line: normalizeLine(formState.line),
         });
         setSaveState(success ? 'saved' : 'error');
 
@@ -182,19 +236,29 @@ export default function DashboardPage() {
         console.error('Error saving:', error);
         setSaveState('error');
       }
-    }, 700),
-    [board, formState]
-  );
+    }, 700);
 
-  useEffect(() => {
-    autoSave();
-  }, [formState, autoSave]);
+    return () => clearTimeout(timeout);
+  }, [canEdit, ensureBoard, formState, loading, loadingBoard, user]);
 
   const handleFormChange = (field: keyof BoardFormState, value: string | number) => {
+    if (!canEdit) return;
+
     setFormState((prev) => ({
       ...prev,
-      [field]: value,
+      [field]: field === 'shift' && typeof value === 'string'
+        ? normalizeShift()
+        : value,
     }));
+  };
+
+  const handleSelectMachine = (machine: 'RK1' | 'RK2' | 'RK3' | 'RK4') => {
+    setLoadingBoard(true);
+    setBoard(null);
+    setHourlyData([]);
+    setProblems([]);
+    setSaveState('idle');
+    setSelectedMachine(machine);
   };
 
   const handleUpdateHour = async (
@@ -204,31 +268,9 @@ export default function DashboardPage() {
     accumulatedPlan: number,
     accumulatedActual: number
   ) => {
-    let activeBoard = board;
+    if (!canEdit) return;
 
-    if (!activeBoard) {
-      activeBoard = await createBoard({
-        machine_code: selectedMachine,
-        date: today,
-        leader_id: user?.id || '',
-        leader_name: user?.name || '',
-        supervisor_name: '',
-        shift: formState.shift || '1',
-        model: formState.model || DEFAULT_MODEL,
-        daily_goal: formState.daily_goal || 0,
-        meta_fpy: 0,
-        meta_productivity: 0,
-        engineer: formState.engineer || '',
-        line: formState.line || selectedMachine,
-        process_type: formState.process_type || '',
-        operator: formState.operator || '',
-        created_by: user?.id || '',
-      });
-
-      if (activeBoard) {
-        setBoard(activeBoard);
-      }
-    }
+    const activeBoard = await ensureBoard();
 
     if (!activeBoard) return;
 
@@ -251,34 +293,12 @@ export default function DashboardPage() {
 
   const handleAddProblem = async (
     problem: Omit<Problem, 'id' | 'created_at' | 'updated_at'>
-  ) => {
-    let activeBoard = board;
+  ): Promise<boolean> => {
+    if (!canEdit) return false;
 
-    if (!activeBoard) {
-      activeBoard = await createBoard({
-        machine_code: selectedMachine,
-        date: today,
-        leader_id: user?.id || '',
-        leader_name: user?.name || '',
-        supervisor_name: '',
-        shift: formState.shift || '1',
-        model: formState.model || DEFAULT_MODEL,
-        daily_goal: formState.daily_goal || 0,
-        meta_fpy: 0,
-        meta_productivity: 0,
-        engineer: formState.engineer || '',
-        line: formState.line || selectedMachine,
-        process_type: formState.process_type || '',
-        operator: formState.operator || '',
-        created_by: user?.id || '',
-      });
+    const activeBoard = await ensureBoard();
 
-      if (activeBoard) {
-        setBoard(activeBoard);
-      }
-    }
-
-    if (!activeBoard) return;
+    if (!activeBoard) return false;
 
     const result = await createProblem({
       ...problem,
@@ -290,10 +310,18 @@ export default function DashboardPage() {
         ...prev,
         result,
       ].sort((a, b) => a.hour - b.hour));
+      setSaveState('saved');
+      setTimeout(() => setSaveState('idle'), 3000);
+      return true;
     }
+
+    setSaveState('error');
+    return false;
   };
 
   const handleDeleteProblem = async (id: string) => {
+    if (!canEdit) return;
+
     const success = await deleteProblem(id);
     if (success) {
       setProblems((prev) => prev.filter((p) => p.id !== id));
@@ -353,7 +381,7 @@ export default function DashboardPage() {
         <MachineTabs
           machines={availableMachines}
           selectedMachine={selectedMachine}
-          onSelectMachine={setSelectedMachine}
+          onSelectMachine={handleSelectMachine}
         />
 
         <div className="space-y-4">
@@ -370,12 +398,16 @@ export default function DashboardPage() {
               formState={formState}
               onFormChange={handleFormChange}
               saveState={saveState}
+              readOnly={!canEdit}
             />
             <ProductionTable
               hourlyData={hourlyData}
               problems={problems}
               model={formState.model}
               onUpdateHour={handleUpdateHour}
+              onAddProblem={handleAddProblem}
+              onDeleteProblem={handleDeleteProblem}
+              readOnly={!canEdit}
             />
           </div>
 
@@ -385,6 +417,7 @@ export default function DashboardPage() {
             problems={problems}
             onAddProblem={handleAddProblem}
             onDeleteProblem={handleDeleteProblem}
+            readOnly={!canEdit}
           />
 
           <ExportSection

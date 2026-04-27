@@ -20,9 +20,15 @@ CREATE TABLE production_boards (
   leader_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   leader_name VARCHAR(255),
   supervisor_name VARCHAR(255),
-  shift VARCHAR(10) CHECK (shift IN ('1', '2', '3')),
+  shift VARCHAR(10) DEFAULT '423' CHECK (shift = '423'),
   model VARCHAR(255),
   daily_goal INTEGER DEFAULT 0,
+  meta_fpy NUMERIC(5, 2) DEFAULT 0,
+  meta_productivity NUMERIC(5, 2) DEFAULT 0,
+  engineer VARCHAR(255),
+  line VARCHAR(255),
+  process_type VARCHAR(255),
+  operator VARCHAR(255),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   created_by UUID REFERENCES users(id) ON DELETE SET NULL,
@@ -97,11 +103,30 @@ CREATE POLICY "Leaders can view their boards"
 
 CREATE POLICY "Leaders can create boards"
   ON production_boards FOR INSERT
-  WITH CHECK (auth.uid() = leader_id);
+  WITH CHECK (
+    auth.uid() = leader_id
+    AND (
+      machine_code IN (
+        SELECT unnest(assigned_rks)
+        FROM users
+        WHERE id = auth.uid() AND role = 'leader'
+      )
+      OR auth.uid() IN (SELECT id FROM users WHERE role = 'admin')
+    )
+  );
 
 CREATE POLICY "Leaders can update their boards"
   ON production_boards FOR UPDATE
   USING (
+    auth.uid() = leader_id OR
+    machine_code IN (
+      SELECT unnest(assigned_rks)
+      FROM users
+      WHERE id = auth.uid() AND role = 'leader'
+    ) OR
+    auth.uid() IN (SELECT id FROM users WHERE role = 'admin')
+  )
+  WITH CHECK (
     auth.uid() = leader_id OR
     machine_code IN (
       SELECT unnest(assigned_rks)
@@ -117,7 +142,14 @@ CREATE POLICY "Users can view hourly data of accessible boards"
   USING (
     board_id IN (
       SELECT id FROM production_boards 
-      WHERE leader_id = auth.uid() OR auth.uid() IN (SELECT id FROM users WHERE role IN ('admin', 'supervisor'))
+      WHERE
+        leader_id = auth.uid()
+        OR machine_code IN (
+          SELECT unnest(assigned_rks)
+          FROM users
+          WHERE id = auth.uid() AND role = 'leader'
+        )
+        OR auth.uid() IN (SELECT id FROM users WHERE role IN ('admin', 'supervisor'))
     )
   );
 
@@ -125,7 +157,15 @@ CREATE POLICY "Users can insert hourly data"
   ON hourly_production FOR INSERT
   WITH CHECK (
     board_id IN (
-      SELECT id FROM production_boards WHERE leader_id = auth.uid()
+      SELECT id FROM production_boards
+      WHERE
+        leader_id = auth.uid()
+        OR machine_code IN (
+          SELECT unnest(assigned_rks)
+          FROM users
+          WHERE id = auth.uid() AND role = 'leader'
+        )
+        OR auth.uid() IN (SELECT id FROM users WHERE role = 'admin')
     )
   );
 
@@ -133,7 +173,15 @@ CREATE POLICY "Users can update hourly data"
   ON hourly_production FOR UPDATE
   USING (
     board_id IN (
-      SELECT id FROM production_boards WHERE leader_id = auth.uid()
+      SELECT id FROM production_boards
+      WHERE
+        leader_id = auth.uid()
+        OR machine_code IN (
+          SELECT unnest(assigned_rks)
+          FROM users
+          WHERE id = auth.uid() AND role = 'leader'
+        )
+        OR auth.uid() IN (SELECT id FROM users WHERE role = 'admin')
     )
   );
 
@@ -142,7 +190,15 @@ CREATE POLICY "Users can view problems"
   ON problems FOR SELECT
   USING (
     board_id IN (
-      SELECT id FROM production_boards WHERE leader_id = auth.uid() OR auth.uid() IN (SELECT id FROM users WHERE role IN ('admin', 'supervisor'))
+      SELECT id FROM production_boards
+      WHERE
+        leader_id = auth.uid()
+        OR machine_code IN (
+          SELECT unnest(assigned_rks)
+          FROM users
+          WHERE id = auth.uid() AND role = 'leader'
+        )
+        OR auth.uid() IN (SELECT id FROM users WHERE role IN ('admin', 'supervisor'))
     )
   );
 
@@ -150,7 +206,15 @@ CREATE POLICY "Users can insert problems"
   ON problems FOR INSERT
   WITH CHECK (
     board_id IN (
-      SELECT id FROM production_boards WHERE leader_id = auth.uid()
+      SELECT id FROM production_boards
+      WHERE
+        leader_id = auth.uid()
+        OR machine_code IN (
+          SELECT unnest(assigned_rks)
+          FROM users
+          WHERE id = auth.uid() AND role = 'leader'
+        )
+        OR auth.uid() IN (SELECT id FROM users WHERE role = 'admin')
     )
   );
 
@@ -158,6 +222,14 @@ CREATE POLICY "Users can delete problems"
   ON problems FOR DELETE
   USING (
     board_id IN (
-      SELECT id FROM production_boards WHERE leader_id = auth.uid()
+      SELECT id FROM production_boards
+      WHERE
+        leader_id = auth.uid()
+        OR machine_code IN (
+          SELECT unnest(assigned_rks)
+          FROM users
+          WHERE id = auth.uid() AND role = 'leader'
+        )
+        OR auth.uid() IN (SELECT id FROM users WHERE role = 'admin')
     )
   );

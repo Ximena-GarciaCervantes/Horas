@@ -3,12 +3,16 @@
 import React from 'react';
 import { BoardFormState } from '@/types';
 
+const LINE_OPTIONS = ['315', '314', '313', '312'];
+const ENGINEER_NAME = 'Sergio B.';
+
 interface HeaderBoardProps {
   date: string;
   machineCode: string;
   formState: BoardFormState;
   onFormChange: (field: keyof BoardFormState, value: string | number) => void;
   saveState: 'idle' | 'saving' | 'saved' | 'error';
+  readOnly?: boolean;
 }
 
 export default function HeaderBoard({
@@ -17,6 +21,7 @@ export default function HeaderBoard({
   formState,
   onFormChange,
   saveState,
+  readOnly = false,
 }: HeaderBoardProps) {
   const saveText =
     saveState === 'saved'
@@ -40,6 +45,7 @@ export default function HeaderBoard({
               type="number"
               value={formState.meta_fpy}
               onChange={(e) => onFormChange('meta_fpy', e.target.value)}
+              readOnly={readOnly}
             />
           </div>
           <div className="header-field">
@@ -49,6 +55,7 @@ export default function HeaderBoard({
               type="number"
               value={formState.meta_productivity}
               onChange={(e) => onFormChange('meta_productivity', e.target.value)}
+              readOnly={readOnly}
             />
           </div>
         </div>
@@ -65,11 +72,9 @@ export default function HeaderBoard({
         <div className="header-field">
           Turno:
           <input
-            type="number"
+            type="text"
             value={formState.shift}
-            onChange={(e) => onFormChange('shift', e.target.value)}
-            min="1"
-            max="3"
+            readOnly
           />
         </div>
 
@@ -77,20 +82,24 @@ export default function HeaderBoard({
           Ingeniero:
           <input
             type="text"
-            value={formState.engineer}
-            onChange={(e) => onFormChange('engineer', e.target.value)}
-            placeholder="Nombre"
+            value={ENGINEER_NAME}
+            readOnly
           />
         </div>
 
         <div className="header-field">
           Línea:
-          <input
-            type="text"
-            value={formState.line}
+          <select
+            value={LINE_OPTIONS.includes(formState.line) ? formState.line : '315'}
             onChange={(e) => onFormChange('line', e.target.value)}
-            placeholder="RK1, RK2, etc."
-          />
+            disabled={readOnly}
+          >
+            {LINE_OPTIONS.map((line) => (
+              <option key={line} value={line}>
+                {line}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="header-field">
@@ -100,6 +109,7 @@ export default function HeaderBoard({
             value={formState.process_type}
             onChange={(e) => onFormChange('process_type', e.target.value)}
             placeholder="Proceso"
+            readOnly={readOnly}
           />
         </div>
 
@@ -110,6 +120,7 @@ export default function HeaderBoard({
             value={formState.operator}
             onChange={(e) => onFormChange('operator', e.target.value)}
             placeholder="Nombre del operador"
+            readOnly={readOnly}
           />
         </div>
       </div>

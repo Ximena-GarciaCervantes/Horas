@@ -1,0 +1,58 @@
+
+> production-dashboard@1.0.0 dev
+> next dev
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1372ms
+ ○ Compiling / ...
+ ✓ Compiled / in 3.6s (1152 modules)
+ HEAD /dashboard 200 in 3779ms
+ HEAD / 307 in 3805ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 1229ms (951 modules)
+ HEAD /login 200 in 1084ms
+ GET /dashboard 200 in 50ms
+ ✓ Compiled /_not-found in 118ms (954 modules)
+ GET /sw.js 404 in 159ms
+ GET /sw.js 404 in 45ms
+ GET /dashboard 200 in 89ms
+ GET /sw.js 404 in 51ms
+ GET /login 200 in 23ms
+ GET /sw.js 404 in 46ms
+ ✓ Compiled in 287ms (960 modules)
+ ✓ Compiled in 670ms (960 modules)
+ HEAD /dashboard 200 in 94ms
+ ✓ Compiled /_error in 467ms (1173 modules)
+ GET /sw.js 500 in 1106ms
+ GET /_next/static/css/app/layout.css?v=1777248809356 404 in 56ms
+ GET /dashboard 200 in 25ms
+ GET /_next/static/css/app/layout.css?v=1777248814965 404 in 23ms
+ GET /_next/static/chunks/main-app.js?v=1777248814965 404 in 26ms
+ GET /_next/static/chunks/app/dashboard/page.js 404 in 25ms
+ GET /_next/static/chunks/app/error.js 404 in 24ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 26ms
+ GET /sw.js 404 in 9ms
+ ✓ Compiled in 598ms (1185 modules)
+ ✓ Compiled in 225ms (1182 modules)
+ ✓ Compiled / in 53ms (519 modules)
+ ✓ Compiled /_error in 91ms (1178 modules)
+ GET / 500 in 409ms
+ GET / 307 in 62ms
+ GET /login 200 in 65ms
+ ✓ Compiled /_not-found in 141ms (1181 modules)
+ GET /sw.js 404 in 194ms
+ GET /_next/static/css/app/layout.css?v=1777248946162 404 in 100ms
+ GET /_next/static/chunks/main-app.js?v=1777248946162 404 in 89ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 88ms
+ GET /_next/static/chunks/app/login/page.js 404 in 88ms
+ GET /_next/static/chunks/app/error.js 404 in 65ms
+ GET /sw.js 404 in 78ms
+ ✓ Compiled in 477ms (1195 modules)
+ ✓ Compiled in 247ms (1182 modules)
+ HEAD /dashboard 200 in 83ms
+ ✓ Compiled in 257ms (1182 modules)
+ HEAD /dashboard 200 in 48ms
